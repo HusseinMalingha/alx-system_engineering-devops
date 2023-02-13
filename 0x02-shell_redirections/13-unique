@@ -1,2 +1,2 @@
 #!/bin/bash
-echo -R "$word" >> list | cat list | uniq -u
+echo "$word" >> list | uniq -u | cat list
