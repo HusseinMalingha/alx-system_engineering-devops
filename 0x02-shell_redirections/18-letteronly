@@ -1,2 +1,2 @@
 #!/bin/bash
-grep -f /etc/ssh/sshd_config [:alpha:]*
+grep -f [:alpha:]* /etc/ssh/sshd_config
