@@ -1,2 +1,2 @@
 #!/bin/bash
-ls -1 | grep -E '^\.' -v | grep -cE '/$'
+find . -type d -not -name '.' | wc -l
