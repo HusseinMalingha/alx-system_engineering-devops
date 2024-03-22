@@ -1,0 +1,34 @@
+#!/bin/bash
+
+# Display listening ports and associated processes
+
+echo "Active Internet connections (only servers)"
+echo "Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name"
+
+# Run ss command to get listening sockets and associated processes
+ss -tuln | awk 'NR>1 {print $1, $2, $4}' | while read proto recvq sendq localaddr; do
+    # Extract IP and port from the local address
+    ip=$(echo $localaddr | awk -F ':' '{print $1}')
+    port=$(echo $localaddr | awk -F ':' '{print $2}')
+
+    # Get PID and program name associated with the port
+    pid=$(lsof -i :$port | grep LISTEN | awk '{print $2}')
+    program=$(ps -p $pid -o comm=)
+
+    # Print the details
+    echo "$proto $recvq $sendq $localaddr *:* $pid/$program"
+done
+
+echo "Active UNIX domain sockets (only servers)"
+echo "Proto RefCnt Flags       Type       State         I-Node   PID/Program name    Path"
+
+# Run ss command to get UNIX domain sockets and associated processes
+ss -xln | awk 'NR>1 {print $1, $2, $4, $5}' | while read proto refcnt flags type state inode; do
+    # Get PID and program name associated with the inode
+    pid=$(lsof -U +c 0 | grep $inode | awk '{print $2}')
+    program=$(ps -p $pid -o comm=)
+
+    # Print the details
+    echo "$proto $refcnt $flags $type $state $inode $pid/$program $inode"
+done
+
